@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Café Bliss — Luxury Coffee House</title>
+  <meta name="description" content="Café Bliss — a luxury coffee experience in Goa. Reserve a table, browse our menu, and get in touch." />
+  <meta name="theme-color" content="#0d0b0a" />
+  <!-- Social cards -->
+  <meta property="og:title" content="Café Bliss — Luxury Coffee House" />
+  <meta property="og:description" content="A luxury coffee experience in Goa. Book a table and explore our menu." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1600&auto=format&fit=crop" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Fonts: preconnect + swap for speed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Preload hero image (best-effort; may be ignored cross-origin) -->
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=2000&auto=format&fit=crop" imagesrcset="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200&auto=format&fit=crop 1200w, https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=2000&auto=format&fit=crop 2000w" imagesizes="100vw">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial']
+          },
+          colors: {
+            espresso: { 900: '#0d0b0a', 850:'#11100e', 800: '#151211', 700: '#1b1715', 600: '#231d1a', 500: '#2c2421' },
+            gold: { 300: '#e9c87a', 400: '#dcb75f', 500: '#caa14a' }
+          },
+          boxShadow: { glow: '0 0 0 1px rgba(255, 215, 130, .25), 0 14px 38px rgba(0,0,0,.45)' }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --gold:#caa14a; --ink:#0d0b0a; }
+
+    /* ===== Accessibility: respect reduced motion ===== */
+    @media (prefers-reduced-motion: reduce) {
+      .enter, .enter-pop, .reveal, .coffee-cup, [data-parallax] { animation: none !important; transition: none !important; }
+    }
+
+    /* ===== Parallax with multiple layers (works on iOS/Android/desktop) ===== */
+    .parallax-hero { position: relative; min-height: 100vh; overflow: hidden; isolation: isolate; background: #0b0a09; }
+    .parallax-layer { position:absolute; inset:-12vh -4vw -12vh -4vw; will-change: transform; transform: translate3d(0,0,0) scale(1.06); background-size: cover; background-position:center; z-index:-3; filter: saturate(.9) contrast(1.05) brightness(.62); }
+    .parallax-grain { position:absolute; inset:0; pointer-events:none; opacity:.12; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.35"/></svg>'); mix-blend-mode:soft-light; z-index:-1; }
+    .hero-overlay { position:absolute; inset:0; background: radial-gradient(1000px 600px at 20% 20%, rgba(202,161,74,0.15), rgba(0,0,0,0) 60%), linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.65)); z-index:-2; pointer-events:none; }
+
+    /* ===== Clip-path shape (responsive) ===== */
+    .hero-clip { position:absolute; inset:0; clip-path: polygon(0 0, 100% 0, 100% 80%, 70% 90%, 0 75%); background: linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.5)); pointer-events:none; z-index:0; }
+    @media (max-width: 1024px){ .hero-clip{ clip-path: polygon(0 0, 100% 0, 100% 86%, 65% 95%, 0 82%);} }
+    @media (max-width: 640px){ .hero-clip{ clip-path: polygon(0 0, 100% 0, 100% 90%, 60% 98%, 0 85%);} }
+
+    /* ===== Coffee cup float ===== */
+    @keyframes floatCup { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-8px)} }
+    .coffee-cup { animation: floatCup 3.6s ease-in-out infinite; filter: drop-shadow(0 10px 22px rgba(0,0,0,.46)); will-change: transform; }
+
+    /* ===== Entrances: fade/slide/pop sequencing ===== */
+    @keyframes riseSoft { from { opacity:0; transform: translateY(28px) scale(.985) } to { opacity:1; transform: translateY(0) scale(1) } }
+    @keyframes popSoft  { from { opacity:0; transform: scale(.94) } to { opacity:1; transform: scale(1) } }
+    .enter { opacity:0; }
+    .enter.is-in { opacity:1; animation: riseSoft .85s cubic-bezier(.2,.7,.2,1) forwards; }
+    .enter-pop.is-in { opacity:1; animation: popSoft .7s cubic-bezier(.2,.7,.2,1) forwards; }
+
+    /* ===== Scroll reveal ===== */
+    .reveal { opacity:0; transform: translateY(28px); }
+    .reveal.revealed { opacity:1; transform:none; transition: opacity .8s ease, transform .8s ease; }
+
+    /* ===== Luxury utilities ===== */
+    .text-gradient-gold{ background:linear-gradient(90deg,#f0df9a,#caa14a 55%,#8e6f2e); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .nav-blur { backdrop-filter: saturate(1.1) blur(10px); background: rgba(13,11,10,.55); border-bottom: 1px solid rgba(202,161,74,.15); }
+    .menu-card{ transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease; }
+    .menu-card:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(0,0,0,.46); border-color: rgba(202,161,74,.55); }
+    .underline-gold{ background-image: linear-gradient(currentColor,currentColor); background-position: 0% 100%; background-repeat:no-repeat; background-size: 0% 2px; transition: background-size .35s ease; }
+    .underline-gold:hover{ background-size: 100% 2px; }
+
+    /* Scroll cue */
+    .scroll-cue { position:absolute; left:50%; bottom:18px; transform: translateX(-50%); opacity:.85; }
+    .scroll-cue .dot{ width:6px; height:6px; border-radius:999px; background:var(--gold); animation: bounce 1.6s infinite; }
+    @keyframes bounce{ 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(6px)} }
+
+    /* Form aesthetics */
+    .field{ background: rgba(255,255,255,.045); border:1px solid rgba(202,161,74,.18); color:#f7f4ef; }
+    .field::placeholder{ color: rgba(240,233,213,.55) }
+    .field:focus{ outline:none; box-shadow:0 0 0 3px rgba(202,161,74,.25); border-color: rgba(202,161,74,.45); }
+
+    /* Map ratio */
+    .ratio{ position:relative; width:100%; padding-bottom:56% }
+    .ratio>iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter: grayscale(.1) contrast(1.05) brightness(.9) }
+  </style>
+
+  <!-- Structured data (SEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    "name": "Café Bliss",
+    "address": {"@type":"PostalAddress","streetAddress":"123 Bliss Avenue","addressLocality":"Panaji","addressRegion":"Goa","postalCode":"403001","addressCountry":"IN"},
+    "telephone": "+91-12345-67890",
+    "servesCuisine": ["Coffee", "Bakery", "Desserts"],
+    "openingHours": ["Mo-Th 08:00-21:30","Fr-Sa 08:00-23:00","Su 09:00-20:00"],
+    "url": "https://example.com",
+    "priceRange":"₹₹",
+    "hasMenu":"https://example.com/menu"
+  }
+  </script>
+</head>
+<body class="bg-espresso-900 text-zinc-200 font-sans antialiased selection:bg-gold-400/30 selection:text-white">
+  <!-- ===== Sticky Nav ===== -->
+  <header class="fixed top-0 inset-x-0 z-50 nav-blur" role="banner">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16" aria-label="Primary">
+      <a href="#top" class="flex items-center gap-3" aria-label="Go to top">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-gold-500/40 bg-gradient-to-br from-espresso-600 to-espresso-800 shadow-glow">☕</span>
+        <span class="font-serif text-xl tracking-wide">Café Bliss</span>
+      </a>
+      <ul class="hidden md:flex items-center gap-8 text-sm">
+        <li><a href="#menu" class="underline-gold hover:text-gold-400 transition">Menu</a></li>
+        <li><a href="#about" class="underline-gold hover:text-gold-400 transition">About</a></li>
+        <li><a href="#reserve" class="underline-gold hover:text-gold-400 transition">Reserve</a></li>
+        <li><a href="#contact" class="underline-gold hover:text-gold-400 transition">Contact</a></li>
+      </ul>
+      <div class="flex items-center gap-3">
+        <a href="#reserve" class="hidden sm:inline-flex px-4 py-2 rounded-full bg-gold-500/90 hover:bg-gold-400 text-espresso-900 font-semibold shadow-glow transition">Book Now</a>
+        <button id="mobileBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg ring-1 ring-white/10 hover:ring-white/20" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">☰</button>
+      </div>
+    </nav>
+    <div id="mobileMenu" class="md:hidden hidden border-t border-white/10" role="dialog" aria-label="Mobile menu">
+      <div class="px-4 py-3 space-y-3 bg-espresso-800/80">
+        <a class="block" href="#menu">Menu</a>
+        <a class="block" href="#about">About</a>
+        <a class="block" href="#reserve">Reserve</a>
+        <a class="block" href="#contact">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section id="top" class="parallax-hero flex items-center" aria-label="Hero">
+    <!-- Multi-layer parallax: background + soft bokeh -->
+    <div class="parallax-layer" data-parallax data-speed="0.18" style="background-image:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=2000&auto=format&fit=crop')"></div>
+    <div class="parallax-layer" data-parallax data-speed="0.08" style="background-image:url('https://images.unsplash.com/photo-1487412912498-0447578fcca8?q=80&w=1800&auto=format&fit=crop'); filter: blur(8px) opacity(.25);"></div>
+    <div class="parallax-grain"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-clip"></div>
+
+    <div class="hero-content max-w-7xl mx-auto w-full px-6 pt-28 pb-24 grid lg:grid-cols-2 gap-10">
+      <div class="flex flex-col items-start justify-center">
+        <p class="enter text-sm uppercase tracking-[0.25em] text-gold-300/80">Luxury Coffee House</p>
+        <h1 class="enter mt-4 text-4xl sm:text-5xl lg:text-6xl font-serif leading-tight text-gradient-gold">Where Every Sip Tells a Story</h1>
+        <p class="enter mt-6 text-zinc-300/90 max-w-xl">Hand-picked beans, slow-roasted to perfection, served in a space designed for conversations and quiet moments alike.</p>
+        <div class="enter mt-8 flex items-center gap-4">
+          <a href="#menu" class="px-6 py-3 rounded-full bg-gold-500/90 hover:bg-gold-400 text-espresso-900 font-semibold shadow-glow transition">Explore Menu</a>
+          <a href="#reserve" class="px-6 py-3 rounded-full ring-1 ring-gold-500/35 hover:bg-white/5 transition">Reserve a Table</a>
+        </div>
+      </div>
+      <div class="relative flex items-end justify-center lg:justify-end">
+        <img src="coffecup-removebg-preview.png" width="640" height="640" alt="Coffee cup" class="enter-pop coffee-cup w-[220px] sm:w-[260px] lg:w-[320px]" />
+      </div>
+    </div>
+
+    <div class="scroll-cue flex flex-col items-center gap-2" aria-hidden="true">
+      <div class="w-4 h-7 rounded-full ring-1 ring-gold-500/35 flex items-start justify-center p-1">
+        <span class="dot"></span>
+      </div>
+      <span class="text-[11px] tracking-widest uppercase text-gold-300/80">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ===== MENU ===== -->
+  <section id="menu" class="relative py-24" aria-labelledby="menuHeading">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,rgba(202,161,74,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(202,161,74,0.06),transparent_40%)]"></div>
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <p class="reveal uppercase tracking-[0.25em] text-sm text-gold-300/80">Signature Selection</p>
+        <h2 id="menuHeading" class="reveal mt-3 text-3xl sm:text-4xl font-serif">Our Menu</h2>
+        <p class="reveal mt-4 text-zinc-300/80 max-w-2xl mx-auto">Classic craft and modern twists — discover your new favorite cup.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Each card images: responsive, lazy-loaded -->
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1200&auto=format&fit=crop" alt="Espresso" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Espresso</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹120</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Bold, concentrated, beautifully balanced shot.</p>
+        </article>
+
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200&auto=format&fit=crop" alt="Latte" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Vanilla Latte</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹150</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Silky microfoam with gentle vanilla and caramel notes.</p>
+        </article>
+
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1559563458-527698bf5295?q=80&w=1200&auto=format&fit=crop" alt="Cappuccino" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Cappuccino</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹140</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Rich espresso topped with airy foam for perfect balance.</p>
+        </article>
+
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1200&auto=format&fit=crop" alt="Mocha" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Mocha</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹160</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Chocolate and espresso in a luscious harmony.</p>
+        </article>
+
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1541166751-4dc5b92d1f3f?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1541166751-4dc5b92d1f3f?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1541166751-4dc5b92d1f3f?q=80&w=1200&auto=format&fit=crop" alt="Cold Brew" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Cold Brew</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹180</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Slow-steeped for 18 hours. Smooth, refreshing, strong.</p>
+        </article>
+
+        <article class="menu-card reveal rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <picture>
+            <source type="image/avif" srcset="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=65&fm=avif 1200w" />
+            <source type="image/webp" srcset="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=70&fm=webp 1200w" />
+            <img class="rounded-xl w-full h-44 object-cover" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?q=80&w=1200&auto=format&fit=crop" alt="Butter Croissant" />
+          </picture>
+          <div class="mt-5 flex items-start justify-between">
+            <h3 class="font-semibold text-lg">Butter Croissant</h3>
+            <span class="px-2 py-1 text-espresso-900 bg-gold-500/90 rounded-full font-semibold">₹110</span>
+          </div>
+          <p class="mt-2 text-sm text-zinc-300/80">Flaky, light, baked fresh every morning.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="relative py-24" aria-labelledby="aboutHeading">
+    <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <p class="reveal uppercase tracking-[0.25em] text-sm text-gold-300/80">Our Story</p>
+        <h2 id="aboutHeading" class="reveal mt-3 text-3xl sm:text-4xl font-serif">Crafted with Care</h2>
+        <p class="reveal mt-4 text-zinc-300/85">We partner with small farms and roast in micro-batches to bring out nuanced flavors. Our space is designed with acoustic comfort, warm lighting, and tactile materials — a retreat in the heart of the city.</p>
+        <ul class="reveal mt-6 space-y-3 text-zinc-300/85 list-disc list-inside">
+          <li>Single-origin beans & seasonal blends</li>
+          <li>Slow bar: pour-over, siphon, Chemex</li>
+          <li>Pastry program with local bakers</li>
+        </ul>
+      </div>
+      <div class="reveal rounded-2xl overflow-hidden border border-white/10 shadow-glow">
+        <picture>
+          <img class="w-full h-full object-cover" loading="lazy" decoding="async" src="coffe1.jpeg" alt="Café interior" />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RESERVATION ===== -->
+  <section id="reserve" class="relative py-24" aria-labelledby="reserveHeading">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(202,161,74,0.07),transparent_60%)]"></div>
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <p class="reveal uppercase tracking-[0.25em] text-sm text-gold-300/80">Reserve</p>
+        <h2 id="reserveHeading" class="reveal mt-3 text-3xl sm:text-4xl font-serif">Book a Table</h2>
+        <p class="reveal mt-4 text-zinc-300/80">We’ll hold your seats and have your favorites ready.</p>
+      </div>
+
+      <form class="reveal grid grid-cols-1 md:grid-cols-2 gap-5" action="#" method="post">
+        <input class="field rounded-xl px-4 py-3" name="name" type="text" placeholder="Full Name" required>
+        <input class="field rounded-xl px-4 py-3" name="email" type="email" placeholder="Email" required>
+        <input class="field rounded-xl px-4 py-3" name="phone" type="tel" placeholder="Phone" required>
+        <input class="field rounded-xl px-4 py-3" name="guests" type="number" min="1" max="20" placeholder="Guests" required>
+        <input class="field rounded-xl px-4 py-3" name="date" type="date" required>
+        <input class="field rounded-xl px-4 py-3" name="time" type="time" required>
+        <textarea class="md:col-span-2 field rounded-xl px-4 py-3 min-h-[120px]" name="message" placeholder="Special Requests"></textarea>
+        <button type="submit" class="md:col-span-2 px-6 py-3 rounded-xl bg-gold-500/90 hover:bg-gold-400 text-espresso-900 font-semibold shadow-glow">Confirm Reservation</button>
+      </form>
+
+      <div class="reveal mt-12 grid sm:grid-cols-2 gap-6">
+        <div class="rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <h3 class="font-serif text-2xl">Business Hours</h3>
+          <ul class="mt-4 space-y-2 text-zinc-300/80">
+            <li>Mon–Thu: 8:00 AM – 9:30 PM</li>
+            <li>Fri–Sat: 8:00 AM – 11:00 PM</li>
+            <li>Sun: 9:00 AM – 8:00 PM</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-espresso-800/60 p-6 shadow-glow">
+          <h3 class="font-serif text-2xl">Instant Booking</h3>
+          <p class="mt-2 text-zinc-300/85">Prefer WhatsApp? Tap below and send us your date, time and guest count.</p>
+          <a href="https://wa.me/1234567890?text=I%27d%20like%20to%20book%20a%20table" target="_blank" class="inline-flex mt-4 items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/90 hover:bg-emerald-500 text-espresso-900 font-semibold shadow-glow">WhatsApp to Book</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="relative py-24" aria-labelledby="contactHeading">
+    <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-10 items-start">
+      <div>
+        <p class="reveal uppercase tracking-[0.25em] text-sm text-gold-300/80">Visit Us</p>
+        <h2 id="contactHeading" class="reveal mt-3 text-3xl sm:text-4xl font-serif">Contact & Location</h2>
+        <div class="reveal mt-6 space-y-4">
+          <div class="flex items-start gap-3">
+            <span class="mt-1">📍</span>
+            <p>123 Bliss Avenue, Panaji, Goa 403001</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="mt-1">📞</span>
+            <p><a class="hover:text-gold-400 underline-offset-2 hover:underline" href="tel:+911234567890">+91 12345 67890</a></p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="mt-1">✉️</span>
+            <p><a class="hover:text-gold-400 underline-offset-2 hover:underline" href="mailto:reservations@cafebliss.com">reservations@cafebliss.com</a></p>
+          </div>
+        </div>
+
+        <div class="reveal mt-8 flex items-center gap-4" aria-label="Social links">
+          <a aria-label="Instagram" href="#" class="w-10 h-10 grid place-items-center rounded-full ring-1 ring-white/10 hover:ring-gold-500/40">★</a>
+          <a aria-label="Facebook" href="#" class="w-10 h-10 grid place-items-center rounded-full ring-1 ring-white/10 hover:ring-gold-500/40">f</a>
+          <a aria-label="Twitter" href="#" class="w-10 h-10 grid place-items-center rounded-full ring-1 ring-white/10 hover:ring-gold-500/40">𝕏</a>
+        </div>
+      </div>
+
+      <div class="reveal rounded-2xl overflow-hidden border border-white/10 shadow-glow">
+        <div class="ratio">
+          <iframe title="Café Bliss Map" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60333.76061258788!2d73.776!3d15.4909!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbfb40b4d1e62c9%3A0x2f6b4b2f63f1e8b3!2sPanaji%2C%20Goa!5e0!3m2!1sen!2sin!4v1700000000000">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="border-t border-white/10 bg-espresso-800/70" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+      <div>
+        <h3 class="font-serif text-xl">Café Bliss</h3>
+        <p class="mt-3 text-zinc-300/80">A luxury coffee experience in the heart of Goa. Crafted beverages, artisanal pastries, timeless ambiance.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-zinc-100">Quick Links</h4>
+        <ul class="mt-3 space-y-2">
+          <li><a class="hover:text-gold-400" href="#menu">Menu</a></li>
+          <li><a class="hover:text-gold-400" href="#about">About</a></li>
+          <li><a class="hover:text-gold-400" href="#reserve">Reserve</a></li>
+          <li><a class="hover:text-gold-400" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-zinc-100">Contact</h4>
+        <ul class="mt-3 space-y-2">
+          <li><a class="hover:text-gold-400" href="tel:+911234567890">+91 12345 67890</a></li>
+          <li><a class="hover:text-gold-400" href="mailto:reservations@cafebliss.com">reservations@cafebliss.com</a></li>
+          <li>123 Bliss Avenue, Panaji, Goa</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-zinc-100">Hours</h4>
+        <ul class="mt-3 space-y-2 text-zinc-300/85">
+          <li>Mon–Thu: 8:00 AM – 9:30 PM</li>
+          <li>Fri–Sat: 8:00 AM – 11:00 PM</li>
+          <li>Sun: 9:00 AM – 8:00 PM</li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center text-xs text-zinc-400 py-6">© 2025 Café Bliss. All rights reserved.</div>
+  </footer>
+
+  <!-- ===== Floating Quick Contact ===== -->
+  <div class="fixed right-4 bottom-4 flex flex-col gap-3 z-50" aria-label="Quick contact">
+    <a href="https://wa.me/7028115061" target="_blank" aria-label="WhatsApp" class="w-12 h-12 grid place-items-center rounded-full bg-emerald-500 hover:bg-emerald-400 text-espresso-900 font-bold shadow-glow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.946 11.946 0 0 1-1.62-6.003C.122 5.373 5.495 0 12.057 0c3.178 0 6.167 1.24 8.413 3.488a11.82 11.82 0 0 1 3.48 8.414c-.003 6.563-5.377 11.936-11.94 11.936a11.95 11.95 0 0 1-6.003-1.616L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.593 5.448 0 9.886-4.434 9.889-9.882.002-5.462-4.415-9.89-9.881-9.892-5.45 0-9.884 4.43-9.886 9.88-.001 2.136.627 3.756 1.684 5.366l-.999 3.648 3.801-.713zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.03-.967-.272-.099-.47-.149-.667.149-.198.297-.767.967-.94 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.474-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.074-.149-.667-1.612-.916-2.207-.242-.579-.487-.5-.667-.51l-.57-.01c-.198 0-.52.074-.793.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+    </a>
+    <a href="tel:+911234567890" aria-label="Call" class="w-12 h-12 grid place-items-center rounded-full bg-blue-500 hover:bg-blue-400 text-white shadow-glow">📞</a>
+    <a href="mailto:reservations@cafebliss.com" aria-label="Email" class="w-12 h-12 grid place-items-center rounded-full bg-gold-500 hover:bg-gold-400 text-espresso-900 font-bold shadow-glow">✉️</a>
+  </div>
+
+  <!-- ===== Scripts (deferred): mobile menu, smooth scroll, parallax, entrances, scroll reveal ===== -->
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobileBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileBtn?.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('hidden');
+      mobileBtn.setAttribute('aria-expanded', String(!open));
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id && id.length > 1) {
+          e.preventDefault();
+          document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          mobileMenu?.classList.add('hidden');
+        }
+      });
+    });
+
+    // Parallax
+    const parallaxEls = Array.from(document.querySelectorAll('[data-parallax]'));
+    const parallax = () => {
+      const y = window.scrollY || window.pageYOffset;
+      parallaxEls.forEach(el => {
+        const speed = parseFloat(el.getAttribute('data-speed') || '0.2');
+        el.style.transform = `translate3d(0, ${y * speed}px, 0) scale(1.06)`;
+      });
+    };
+    parallax();
+    window.addEventListener('scroll', parallax, { passive: true });
+
+    // Orchestrated entrance on load
+    const enterEls = document.querySelectorAll('.enter');
+    const enterPopEls = document.querySelectorAll('.enter-pop');
+    window.addEventListener('load', () => {
+      let t = 150;
+      enterEls.forEach(el => { setTimeout(() => el.classList.add('is-in'), t); t += 130; });
+      setTimeout(() => enterPopEls.forEach(el => el.classList.add('is-in')), 450);
+    });
+
+    // Scroll reveal via IntersectionObserver
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); } });
+    }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
